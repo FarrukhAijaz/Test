@@ -37,7 +37,8 @@ end
 function report = generateReportForModel(filePath, branchname)
     % Retrieve the ancestor file
     ancestorFile = retrieveAncestor(filePath, branchname);
-    
+    disp(['FilePath: ', filePath]);
+    disp(['AncestorFile: ', ancestorFile]);
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);

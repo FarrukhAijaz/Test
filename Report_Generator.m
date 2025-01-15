@@ -31,6 +31,7 @@ function Report_Generator(branchname)
             fprintf('File not found (skipped): %s\n', filePath);
         end
     end
+    rmdir modelscopy s
 end
 
 function report = generateReportForModel(tempdir, filePath)
@@ -61,7 +62,7 @@ function ancestorFile = retrieveAncestor(tempdir, filePath)
     ancestorFile = strrep(ancestorFile, '\', '/');
 
     % Fetch the ancestor file from the `main` branch
-    gitCommand = sprintf('git --no-pager show origin/main:%s > "%s"', gitFilePath, ancestorFile);
+    gitCommand = sprintf('git --no-pager show HEAD~1:%s > "%s"', gitFilePath, ancestorFile);
     [status, result] = system(gitCommand);
     assert(status == 0, result);
 end

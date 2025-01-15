@@ -31,7 +31,6 @@ function Report_Generator(branchname)
             fprintf('File not found (skipped): %s\n', filePath);
         end
     end
-    rmdir modelscopy s
 end
 
 function report = generateReportForModel(tempdir, filePath)

@@ -3,21 +3,27 @@ function Report_Generator(branchname)
     validateBranch(branchname);
 
     % List modified `.slx` files in the last commit
-    gitCommand = 'git --no-pager diff --name-only HEAD~1 HEAD ***.slx';
+    gitCommand = 'git --no-pager diff --name-only HEAD~1 HEAD';
     [status, modifiedFiles] = system(gitCommand);
     assert(status == 0, modifiedFiles);
-    modifiedFiles = split(modifiedFiles);
-    modifiedFiles(end) = []; % Removing the last empty element
+
+    % Filter only `.slx` files
+    modifiedFiles = split(modifiedFiles, newline);
+    modifiedFiles = modifiedFiles(endsWith(modifiedFiles, '.slx'));
 
     if isempty(modifiedFiles)
-        disp('No modified models in the last commit.')
+        disp('No modified models in the last commit.');
         return;
     end
 
     % Generate a comparison report for each modified model
     for i = 1:numel(modifiedFiles)
-        filePath = string(modifiedFiles(i));
-        generateReportForModel(filePath, branchname);
+        filePath = strtrim(string(modifiedFiles(i))); % Trim whitespace
+        if isfile(filePath)
+            generateReportForModel(filePath, branchname);
+        else
+            fprintf('File not found (skipped): %s\n', filePath);
+        end
     end
 end
 
@@ -45,7 +51,7 @@ function ancestorFile = retrieveAncestor(filePath, branchname)
     ancestorFile = strrep(ancestorFile, '\', '/');
 
     % Fetch the ancestor file from the `main` branch
-    gitCommand = sprintf('git --no-pager show origin/main:%s > %s', gitFilePath, ancestorFile);
+    gitCommand = sprintf('git --no-pager show origin/main:%s > "%s"', gitFilePath, ancestorFile);
     [status, result] = system(gitCommand);
     assert(status == 0, result);
 end

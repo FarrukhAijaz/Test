@@ -57,7 +57,7 @@ end
 function waitforModelsToClose(currentFile, ancestorFile)
     % Wait until both the current model and ancestor model are closed
     while is_system_open(currentFile) || is_system_open(ancestorFile)
-        pause(1); % Check every second
+        pause(150); % Check every second
     end
     disp('Both models have been closed');
 end

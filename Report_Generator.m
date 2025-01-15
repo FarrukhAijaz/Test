@@ -42,8 +42,8 @@ function report = generateReportForModel(filePath, branchname)
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
-    report = publish(comp, 'html');  % Set outputDir correctly
-    disp('Publishing completed to HTML');
+    report = publish(comp, 'pdf');  % Set outputDir correctly
+    disp('Publishing completed to PDF');
 
 end
 

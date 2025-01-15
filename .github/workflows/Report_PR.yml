@@ -43,4 +43,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: diff-reports
-          path: '**/*_comparison_report.pdf'
+          path: '**/*.pdf'

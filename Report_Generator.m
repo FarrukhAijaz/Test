@@ -37,7 +37,11 @@ end
 function report = generateReportForModel(filePath, branchname)
     % Retrieve the ancestor file
     ancestorFile = retrieveAncestor(filePath, branchname);
-
+    % Open both the ancestor and current model in Simulink
+    open_system(filePath); % Open current model
+    disp('Current model opened in Simulink');
+    open_system(ancestorFile); % Open ancestor model
+    disp('Ancestor model opened in Simulink');
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);

@@ -42,6 +42,9 @@ function generateReportForModel(filePath, branchname)
     tempReportPath = fullfile(workspaceDir, reportName);  % Store in the workspace
     finalReportPath = fullfile(fileDir, reportName);
 
+    disp('GitHub workspace directory:');
+    disp(workspaceDir);
+    
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
@@ -70,10 +73,11 @@ function generateReportForModel(filePath, branchname)
         movefile(tempReportPath, finalReportPath);
         fprintf('Comparison report generated: %s\n', finalReportPath);
     else
+        disp('Report not generated:');
+        disp(tempReportPath);
         error('Report not generated: %s', tempReportPath);
     end
 end
-
 
 
 

@@ -33,10 +33,16 @@ function generateReportForModel(filePath, branchname)
 
     % Generate a comparison report
     [fileDir, fileName, ~] = fileparts(filePath);
-    reportPath = fullfile(fileDir, sprintf('%s_comparison_report.pdf', fileName));
+    reportName = sprintf('%s_comparison_report.pdf', fileName);
+    reportPath = fullfile(fileDir, reportName);
+
+    % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
-    publish(comp, reportPath);
+
+    % Publish the report in PDF format
+    options = struct('Format', 'pdf', 'OutputPath', reportPath);
+    publish(comp, options);
 
     fprintf('Comparison report generated: %s\n', reportPath);
 end

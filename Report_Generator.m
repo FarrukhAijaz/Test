@@ -37,7 +37,7 @@ function generateReportForModel(filePath, branchname)
     [fileDir, fileName, ~] = fileparts(filePath);
     
     % Set the report name and paths relative to the GitHub Actions workspace
-    reportName = sprintf('%s_comparison_report.pdf', fileName);
+    reportName = sprintf('%s_comparison_report.html', fileName);  % Change to HTML
     workspaceDir = getenv('GITHUB_WORKSPACE');  % GitHub workspace directory
     tempReportPath = fullfile(workspaceDir, reportName);  % Store in the workspace
     finalReportPath = fullfile(fileDir, reportName);
@@ -63,9 +63,8 @@ function generateReportForModel(filePath, branchname)
     disp(dir(workspaceDir));  % This will show the files in the workspace directory
 
     try
-        % Specify the output file directly for HTML or PDF (use HTML here)
-        htmlReportPath = fullfile(workspaceDir, 'comparison_report.html');  % HTML report output
-        publish(comp, 'html', 'outputDir', workspaceDir);  % Explicitly set the output directory
+        % Publish the comparison report as HTML
+        publish(comp, 'html', 'outputDir', workspaceDir);  % Set outputDir correctly
         disp('Publishing completed to HTML');
     catch e
         error('Error during publishing: %s', e.message);
@@ -74,16 +73,17 @@ function generateReportForModel(filePath, branchname)
     cd(originalDir); % Restore original directory
 
     % Verify if the report is created in the workspace directory
-    if isfile(htmlReportPath)
+    if isfile(tempReportPath)
         % Move the HTML report to the final location
-        movefile(htmlReportPath, finalReportPath);
+        movefile(tempReportPath, finalReportPath);
         fprintf('Comparison report generated: %s\n', finalReportPath);
     else
         disp('Report not generated in workspace:');
-        disp(htmlReportPath);
-        error('Report not generated: %s', htmlReportPath);
+        disp(tempReportPath);
+        error('Report not generated: %s', tempReportPath);
     end
 end
+
 
 
 

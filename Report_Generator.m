@@ -42,7 +42,7 @@ function report = generateReportForModel(filePath, branchname)
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered'); % Ensure no filters are hiding changes
-    s = settings().comp.slx.DisplayReportScreenshots;
+    s = settings().comparisons.slx.DisplayReportScreenshots;
     s.TemporaryValue = True;
     report = publish(comp, 'html');
     disp('Publishing completed to HTML');

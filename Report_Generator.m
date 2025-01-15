@@ -35,9 +35,11 @@ function generateReportForModel(filePath, branchname)
 
     % Generate a comparison report
     [fileDir, fileName, ~] = fileparts(filePath);
+    
+    % Set the report name and paths relative to the GitHub Actions workspace
     reportName = sprintf('%s_comparison_report.pdf', fileName);
-    tempDir = tempdir; % Use a temporary directory
-    tempReportPath = fullfile(tempDir, reportName); % Temporary storage location
+    workspaceDir = getenv('GITHUB_WORKSPACE');  % GitHub workspace directory
+    tempReportPath = fullfile(workspaceDir, reportName);  % Store in the workspace
     finalReportPath = fullfile(fileDir, reportName);
 
     % Create comparison object
@@ -46,14 +48,14 @@ function generateReportForModel(filePath, branchname)
 
     % Explicitly set the working directory for `publish`
     originalDir = pwd; % Save current directory
-    cd(tempDir); % Change to temporary directory
+    cd(workspaceDir); % Change to GitHub workspace directory
 
-    % Verify the files in the temporary directory
-    disp('Temporary directory contents:');
-    disp(dir(tempDir));  % This will show the files in the tempDir
+    % Verify the files in the workspace directory
+    disp('GitHub workspace directory contents:');
+    disp(dir(workspaceDir));  % This will show the files in the workspace directory
 
     try
-        % Publish the comparison and save to PDF in the temporary directory
+        % Publish the comparison and save to PDF in the workspace directory
         publish(comp, 'pdf');  % Specify 'pdf' format
         disp('Publishing completed');
     catch e
@@ -62,7 +64,7 @@ function generateReportForModel(filePath, branchname)
 
     cd(originalDir); % Restore original directory
 
-    % Verify if the report is created in the temp directory
+    % Verify if the report is created in the workspace directory
     if isfile(tempReportPath)
         % Move the report to the desired location
         movefile(tempReportPath, finalReportPath);

@@ -1,0 +1,46 @@
+name: Generate Diff Reports for Modified SLX Files
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push events to the main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-diff-reports:
+    name: Generate Diff Reports for Modified SLX Files
+    runs-on: self-hosted
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step 2: Set up MATLAB
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v2
+
+      # Step 3: Start a display server for MATLAB GUI requirements
+      - name: Start display server
+        run: |
+          sudo apt-get install -y xvfb
+          Xvfb :99 &
+          export DISPLAY=:99
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+
+      # Step 4: Check which branch is active and run the MATLAB function
+      - name: Determine Branch and Generate Reports
+        run: |
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "Current branch: $current_branch"
+          matlab -batch "Report_Generator('$current_branch')"
+
+      # Step 5: Upload the generated comparison reports in PDF format
+      - name: Upload Comparison Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-reports
+          path: '**/*_comparison_report.pdf'

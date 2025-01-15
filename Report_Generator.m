@@ -64,7 +64,7 @@ function generateReportForModel(filePath, branchname)
 
     try
         % Publish the comparison report as HTML
-        publish(comp, 'html', 'outputDir', workspaceDir);  % Set outputDir correctly
+        publish(comp, 'outputDir', workspaceDir);  % Set outputDir correctly
         disp('Publishing completed to HTML');
     catch e
         error('Error during publishing: %s', e.message);

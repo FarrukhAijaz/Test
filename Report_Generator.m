@@ -63,8 +63,9 @@ function generateReportForModel(filePath, branchname)
     disp(dir(workspaceDir));  % This will show the files in the workspace directory
 
     try
-        % Try publishing to HTML to avoid LaTeX issues
-        publish(comp, 'html');  % Try HTML as an alternative to PDF
+        % Specify the output file directly for HTML or PDF (use HTML here)
+        htmlReportPath = fullfile(workspaceDir, 'comparison_report.html');  % HTML report output
+        publish(comp, 'html', 'outputDir', workspaceDir);  % Explicitly set the output directory
         disp('Publishing completed to HTML');
     catch e
         error('Error during publishing: %s', e.message);
@@ -73,14 +74,14 @@ function generateReportForModel(filePath, branchname)
     cd(originalDir); % Restore original directory
 
     % Verify if the report is created in the workspace directory
-    if isfile(tempReportPath)
-        % Move the report to the desired location
-        movefile(tempReportPath, finalReportPath);
+    if isfile(htmlReportPath)
+        % Move the HTML report to the final location
+        movefile(htmlReportPath, finalReportPath);
         fprintf('Comparison report generated: %s\n', finalReportPath);
     else
         disp('Report not generated in workspace:');
-        disp(tempReportPath);
-        error('Report not generated: %s', tempReportPath);
+        disp(htmlReportPath);
+        error('Report not generated: %s', htmlReportPath);
     end
 end
 

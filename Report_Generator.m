@@ -18,7 +18,7 @@ function Report_Generator(branchname)
         disp('There were modified files');
     end
     % Create a temporary folder to store the ancestors of the modified models
-    tempdir = fullfile(repoRoot, 'modelscopy');
+    tempdir = fullfile(reporoot, 'modelscopy');
     mkdir(tempdir)
     
     % Generate a comparison report for each modified model

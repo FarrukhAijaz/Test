@@ -42,9 +42,14 @@ function generateReportForModel(filePath, branchname)
     tempReportPath = fullfile(workspaceDir, reportName);  % Store in the workspace
     finalReportPath = fullfile(fileDir, reportName);
 
+    % Debug print the workspace directory and report paths
     disp('GitHub workspace directory:');
     disp(workspaceDir);
-    
+    disp('Temporary report path:');
+    disp(tempReportPath);
+    disp('Final report path:');
+    disp(finalReportPath);
+
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
@@ -58,9 +63,9 @@ function generateReportForModel(filePath, branchname)
     disp(dir(workspaceDir));  % This will show the files in the workspace directory
 
     try
-        % Publish the comparison and save to PDF in the workspace directory
-        publish(comp, 'pdf');  % Specify 'pdf' format
-        disp('Publishing completed');
+        % Try publishing to HTML to avoid LaTeX issues
+        publish(comp, 'html');  % Try HTML as an alternative to PDF
+        disp('Publishing completed to HTML');
     catch e
         error('Error during publishing: %s', e.message);
     end
@@ -73,7 +78,7 @@ function generateReportForModel(filePath, branchname)
         movefile(tempReportPath, finalReportPath);
         fprintf('Comparison report generated: %s\n', finalReportPath);
     else
-        disp('Report not generated:');
+        disp('Report not generated in workspace:');
         disp(tempReportPath);
         error('Report not generated: %s', tempReportPath);
     end

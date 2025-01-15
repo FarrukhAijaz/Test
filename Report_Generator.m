@@ -50,6 +50,7 @@ function generateReportForModel(filePath, branchname)
     try
         % Publish the comparison and save to PDF in the temporary directory
         publish(comp, 'pdf');  % Specify 'pdf' format
+        disp('publishing completed')
     catch e
         error('Error during publishing: %s', e.message);
     end

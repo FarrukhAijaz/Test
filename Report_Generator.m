@@ -1,5 +1,6 @@
 function Report_Generator(branchname)
     % Check the branch to ensure we are working on the correct branch
+    reporoot = pwd;
     validateBranch(branchname);
 
     % List modified `.slx` files in the last commit
@@ -16,72 +17,34 @@ function Report_Generator(branchname)
     else 
         disp('There were modified files');
     end
-
+    % Create a temporary folder to store the ancestors of the modified models
+    tempdir = fullfile(repoRoot, 'modelscopy');
+    mkdir(tempdir)
+    
     % Generate a comparison report for each modified model
     for i = 1:numel(modifiedFiles)
         filePath = strtrim(string(modifiedFiles(i))); % Trim whitespace
         if isfile(filePath)
             disp('Entering Generation of Reports')
-            generateReportForModel(filePath, branchname);
+            report = generateReportForModel(filePath, branchname);
         else
             fprintf('File not found (skipped): %s\n', filePath);
         end
     end
+    rmdir modelscopy s
 end
 
-function generateReportForModel(filePath, branchname)
+function report = generateReportForModel(filePath, branchname)
     % Retrieve the ancestor file
     ancestorFile = retrieveAncestor(filePath, branchname);
 
-    % Generate a comparison report
-    [fileDir, fileName, ~] = fileparts(filePath);
-    
-    % Set the report name and paths relative to the GitHub Actions workspace
-    reportName = sprintf('%s_comparison_report.html', fileName);  % Change to HTML
-    workspaceDir = getenv('GITHUB_WORKSPACE');  % GitHub workspace directory
-    tempReportPath = fullfile(workspaceDir, reportName);  % Store in the workspace
-    finalReportPath = fullfile(fileDir, reportName);
-
-    % Debug print the workspace directory and report paths
-    disp('GitHub workspace directory:');
-    disp(workspaceDir);
-    disp('Temporary report path:');
-    disp(tempReportPath);
-    disp('Final report path:');
-    disp(finalReportPath);
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
+    report = publish(comp, 'html');  % Set outputDir correctly
+    disp('Publishing completed to HTML');
 
-    % Explicitly set the working directory for `publish`
-    originalDir = pwd; % Save current directory
-    cd(workspaceDir); % Change to GitHub workspace directory
-
-    % Verify the files in the workspace directory
-    disp('GitHub workspace directory contents:');
-    disp(dir(workspaceDir));  % This will show the files in the workspace directory
-
-    try
-        % Publish the comparison report as HTML
-        publish(comp, 'outputDir', workspaceDir);  % Set outputDir correctly
-        disp('Publishing completed to HTML');
-    catch e
-        error('Error during publishing: %s', e.message);
-    end
-
-    cd(originalDir); % Restore original directory
-
-    % Verify if the report is created in the workspace directory
-    if isfile(tempReportPath)
-        % Move the HTML report to the final location
-        movefile(tempReportPath, finalReportPath);
-        fprintf('Comparison report generated: %s\n', finalReportPath);
-    else
-        disp('Report not generated in workspace:');
-        disp(tempReportPath);
-        error('Report not generated: %s', tempReportPath);
-    end
 end
 
 

@@ -26,7 +26,7 @@ function Report_Generator(branchname)
         filePath = strtrim(string(modifiedFiles(i))); % Trim whitespace
         if isfile(filePath)
             disp('Entering Generation of Reports')
-            report = generateReportForModel(filePath, branchname);
+            report = generateReportForModel(tempdir, filePath);
         else
             fprintf('File not found (skipped): %s\n', filePath);
         end
@@ -34,17 +34,14 @@ function Report_Generator(branchname)
     rmdir modelscopy s
 end
 
-function report = generateReportForModel(filePath, branchname)
+function report = generateReportForModel(tempdir, filePath)
     % Retrieve the ancestor file
-    ancestorFile = retrieveAncestor(filePath, branchname);
-    disp(['FilePath: ', filePath]);
-    disp(['AncestorFile: ', ancestorFile]);
+    ancestorFile = retrieveAncestor(tempdir, filePath);
+
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered'); % Ensure no filters are hiding changes
-    s = settings().comparisons.slx.DisplayReportScreenshots;
-    s.TemporaryValue = true;
     report = publish(comp, 'html');
     disp('Publishing completed to HTML');
 
@@ -54,10 +51,10 @@ end
 
 
 
-function ancestorFile = retrieveAncestor(filePath, branchname)
+function ancestorFile = retrieveAncestor(tempdir, filePath)
     % Construct the ancestor file path
-    [fileDir, fileName, fileExt] = fileparts(filePath);
-    ancestorFile = fullfile(fileDir, sprintf('%s_ancestor%s', fileName, fileExt));
+    [~, fileName, fileExt] = fileparts(filePath);
+    ancestorFile = fullfile(tempdir, sprintf('%s_ancestor%s', fileName, fileExt));
 
     % Replace separators for Git compatibility
     gitFilePath = strrep(filePath, '\', '/');

@@ -37,40 +37,17 @@ end
 function report = generateReportForModel(filePath, branchname)
     % Retrieve the ancestor file
     ancestorFile = retrieveAncestor(filePath, branchname);
-
-    % Open both the ancestor and current model in Simulink
-    open_system(filePath); % Open current model
-    disp('Current model opened in Simulink');
-    open_system(ancestorFile); % Open ancestor model
-    disp('Ancestor model opened in Simulink');
-
-    % Wait until both models are closed
-    waitforModelsToClose(filePath, ancestorFile);
+    
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered'); % Ensure no filters are hiding changes
+    s = settings().comp.slx.DisplayReportScreenshots;
+    s.TemporaryValue = True;
     report = publish(comp, 'html');
     disp('Publishing completed to HTML');
-end
 
-function waitforModelsToClose(currentFile, ancestorFile)
-    % Wait until both the current model and ancestor model are closed
-    while is_system_open(currentFile) || is_system_open(ancestorFile)
-        pause(150); % Check every second
-    end
-    disp('Both models have been closed');
 end
-
-function isOpen = is_system_open(modelName)
-    % Check if the system is open in Simulink
-    try
-        isOpen = strcmp(get_param(modelName, 'ObjectVisibility'), 'on');
-    catch
-        isOpen = false; % If the model doesn't exist or is closed, return false
-    end
-end
-
 
 
 

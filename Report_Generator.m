@@ -37,7 +37,7 @@ end
 function report = generateReportForModel(tempdir, filePath)
     % Retrieve the ancestor file
     ancestorFile = retrieveAncestor(tempdir, filePath);
-    disp(['Git File Path: ', gitFilePath]);
+    disp(['Git File Path: ', filePath]);
     disp(['Ancestor File: ', ancestorFile]);
 
     % Create comparison object

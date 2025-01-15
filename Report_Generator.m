@@ -13,13 +13,15 @@ function Report_Generator(branchname)
 
     if isempty(modifiedFiles)
         disp('No modified models in the last commit.');
-        return;
+    else 
+        disp('There were modified files');
     end
 
     % Generate a comparison report for each modified model
     for i = 1:numel(modifiedFiles)
         filePath = strtrim(string(modifiedFiles(i))); % Trim whitespace
         if isfile(filePath)
+            disp('Entering Generation of Reports')
             generateReportForModel(filePath, branchname);
         else
             fprintf('File not found (skipped): %s\n', filePath);
@@ -46,7 +48,8 @@ function generateReportForModel(filePath, branchname)
     originalDir = pwd; % Save current directory
     cd(tempDir); % Change to temporary directory
     try
-        publish(comp, 'pdf');
+        % Publish the comparison and save to PDF in the temporary directory
+        publish(comp, 'pdf');  % Specify 'pdf' format
     catch e
         error('Error during publishing: %s', e.message);
     end
@@ -60,6 +63,7 @@ function generateReportForModel(filePath, branchname)
         error('Report not generated: %s', tempReportPath);
     end
 end
+
 
 
 

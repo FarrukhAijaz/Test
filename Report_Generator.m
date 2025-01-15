@@ -34,18 +34,22 @@ function generateReportForModel(filePath, branchname)
     % Generate a comparison report
     [fileDir, fileName, ~] = fileparts(filePath);
     reportName = sprintf('%s_comparison_report.pdf', fileName);
-    reportPath = fullfile(fileDir, reportName);
+    tempReportPath = fullfile(tempdir, reportName); % Temporary storage location
+    finalReportPath = fullfile(fileDir, reportName);
 
     % Create comparison object
     comp = visdiff(ancestorFile, filePath);
     filter(comp, 'unfiltered');
 
-    % Publish the report in PDF format
-    options = struct('Format', 'pdf', 'OutputPath', reportPath);
-    publish(comp, options);
+    % Publish the report in PDF format to the temporary directory
+    publish(comp, 'pdf');
 
-    fprintf('Comparison report generated: %s\n', reportPath);
+    % Move the report to the desired location
+    movefile(fullfile(pwd, reportName), finalReportPath);
+
+    fprintf('Comparison report generated: %s\n', finalReportPath);
 end
+
 
 function ancestorFile = retrieveAncestor(filePath, branchname)
     % Construct the ancestor file path

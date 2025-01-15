@@ -47,23 +47,31 @@ function generateReportForModel(filePath, branchname)
     % Explicitly set the working directory for `publish`
     originalDir = pwd; % Save current directory
     cd(tempDir); % Change to temporary directory
+
+    % Verify the files in the temporary directory
+    disp('Temporary directory contents:');
+    disp(dir(tempDir));  % This will show the files in the tempDir
+
     try
         % Publish the comparison and save to PDF in the temporary directory
         publish(comp, 'pdf');  % Specify 'pdf' format
-        disp('publishing completed')
+        disp('Publishing completed');
     catch e
         error('Error during publishing: %s', e.message);
     end
+
     cd(originalDir); % Restore original directory
 
-    % Move the report to the desired location
+    % Verify if the report is created in the temp directory
     if isfile(tempReportPath)
+        % Move the report to the desired location
         movefile(tempReportPath, finalReportPath);
         fprintf('Comparison report generated: %s\n', finalReportPath);
     else
         error('Report not generated: %s', tempReportPath);
     end
 end
+
 
 
 
